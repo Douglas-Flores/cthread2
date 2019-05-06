@@ -13,7 +13,7 @@
 
 //Filas
 FILA2 filaAlta, filaMedia, filaBaixa;
-FILA2 join, wait;
+FILA2 join;
 
 TCB_t *executando;
 TCB_t Main;
@@ -47,10 +47,6 @@ void inicializarFilas(){
     join.last = NULL;
     join.it = NULL;
 
-    &wait= (FILA2) malloc(sizeof(FILA2));
-    wait.first = NULL;
-    wait.last = NULL;
-    wait.it = NULL;
 }
 
 
@@ -150,14 +146,52 @@ int cjoin(int tid) {
 }
 
 int csem_init(csem_t *sem, int count) {
+    //Cria a fila do semáforo
+    FILA2 wait;
+    //Inicializa a fila
+    &wait = (FILA2) malloc(sizeof(FILA2));
+    wait.first = NULL;
+    wait.last = NULL;
+    wait.it = NULL;
+    //ponteiro para fila de bloqueados (wait)
+    sem->fila = *wait;
+    //inicialização do count
+    sem->count = count;
 	return -1;
 }
 
 int cwait(csem_t *sem) {
+    if ( sem->count <= 0 ){
+        //estado passa a ser bloqueado
+        executando->state = 2;
+        //adiciona na fila de bloqueados
+        AppendFila2(sem->fila, *executando);
+        //decrementa o count
+        sem->count = sem->count - 1;
+        //retorna com sucesso
+        return 0;
+    }
+    else{
+        sem->count = sem->count - 1;
+        return 0;
+    }
 	return -1;
 }
 
 int csignal(csem_t *sem) {
+    sem->count = sem->count + 1;
+    //Coloca o iterador no primeiro da fila
+    FirstFila2(sem->fila);
+    //
+    s_TCB *temp;
+    temp = sem->fila->node;
+    //seta o nodo para apto
+    temp->state = PROCST_APTO;
+    //remove da fila de espera
+    DeleteAtIteratorFila2(sem->fila)
+    //incrementa o count
+    sem->count = sem->count + 1;
+
 	return -1;
 }
 
