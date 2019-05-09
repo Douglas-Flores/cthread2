@@ -63,13 +63,49 @@ void criarMain(){
 }
 
 
+
+
+TCB_t* criarTCB(int prioridade){
+
+    TCB_t *novoTCB = (TCB_t*) malloc(sizeof(TCB_t));
+    if(novoTCB == NULL){
+        return NULL;
+    }
+    novoTCB->context = *criarContexto();
+    if(novoTCB->context == NULL){
+        return NULL;
+    }
+    novoTCB->tid = novoId();
+    novoTCB->prio = prioridade;
+    novoTCB->state = PROCST_APTO;
+}
+
+ucontext_t* criarContexto(){
+
+    char *pilha = (char*) malloc(SIGSTKSZ);
+    ucontext_t *novoContexto = (ucontext_t*) malloc(sizeof(ucontext_t));
+    if(pilha == NULL ){
+        return NULL;
+    }
+    if(novoContexto == NULL ){
+        return NULL;
+    }
+    novoContexto->uc_stack.ss_sp = pilha;
+    novoContexto->uc_stack.ss_size = SIGSTKSZ;
+    novoContexto->uc_link = NULL;
+    return novoContexto;
+}
+
+
+
+
 /*
  * De acordo com a prioridade do tcb, adiciona na fila correspondente
  * Retorno:
  * caso ==0 sucesso
  * caso !=0 erro
  * */
-int appendTCBNaFilaCorrespondenteAPrioridade(TCB_t *tcb){
+int escalonadorEDespachante(TCB_t *tcb){
     int status;
     switch (tcb->prio)
     {
@@ -117,7 +153,7 @@ TCB_t* proximoProcessoASerExecutado(){
 
 
 int ccreate (void* (*start)(void*), void *arg, int prio) {
-    TCB_t tcb;
+
     tcb.prio = prio;
     tcb.tid = novoId();
     tcb.state = PROCST_APTO;
