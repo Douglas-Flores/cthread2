@@ -16,7 +16,11 @@ INC_DIR=./include
 BIN_DIR=./bin
 SRC_DIR=./src
 
-all: regra1 regra2 regran
+all: biblioteca regra1 regra2 regran
+
+biblioteca:	#dependências para a biblioteca
+		$(CC) -c $(SRC_DIR)/cthread.c -Wall
+		ar crs $(LIB_DIR)/libcthread.a $(BIN_DIR)/support.o cthread.o
 
 regra1: #dependências para a regra1
 	$(CC) -o $(BIN_DIR)regra1 $(SRC_DIR)regra1.c -Wall
@@ -28,6 +32,6 @@ regran: #dependências para a regran
 	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(SRC_DIR)/*.o
+	rm -rf $(LIB_DIR)/*.a $(SRC_DIR)/*.o *.o
 
 
