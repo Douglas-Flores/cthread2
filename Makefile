@@ -28,6 +28,6 @@ regran: #dependências para a regran
 	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+	rm -rf $(LIB_DIR)/*.a $(SRC_DIR)/*.o
 
 
